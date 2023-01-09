@@ -9,11 +9,18 @@ const app = express()
 const staticPath = url.fileURLToPath(new URL('../static', import.meta.url))
 
 
+// Middleware
+const logger = (req, res, next) => {
+	console.log(`${req.method}  ${req.url}`)
+	next()
+}
+app.use( logger )
+
 
 // Routes
 app.get('/', (req, res) => {
 	let path = staticPath + '/index.html'
-	console.log('GET /  path=', path)
+	// console.log('GET /  path=', path)
 	res.sendFile(path)
 })
 
