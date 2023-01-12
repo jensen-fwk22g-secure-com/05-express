@@ -1,21 +1,25 @@
 // Imports
 import express from 'express'
 import * as url from 'url';
+import { isValidBook, isPositiveInteger, isNonEmptyString } from './validate.js'
 
 // Konfiguration
 const app = express()
 // const __filename = url.fileURLToPath(import.meta.url);
 // const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const staticPath = url.fileURLToPath(new URL('../static', import.meta.url))
+const publicPath = url.fileURLToPath(new URL('../public', import.meta.url))
 
 
 // Middleware
 const logger = (req, res, next) => {
-	console.log(`${req.method}  ${req.url}`)
+	console.log(`${req.method}  ${req.url}`, req.body)
 	next()
 }
+app.use( express.json() )
 app.use( logger )
 app.use( express.static(staticPath) )
+app.use( express.static(publicPath) )
 
 /*const authExempel = (req, res, next) => {
 	let path = req.url
@@ -40,7 +44,7 @@ const bookData = [
 	{ title: 'Bröderna Lejonhjärta', authorName: 'Astrid Lindgren', id: 3 }
 ]
 app.get('/api/books', (req, res) => {
-	res.send(bookData)
+	res.status(200).send(bookData)
 })
 app.get('/api/books/:id', (req, res) => {
 	console.log('/api/books/:id')
@@ -53,6 +57,33 @@ app.get('/api/books/:id', (req, res) => {
 		res.sendStatus(404)
 	}
 })
+
+
+
+app.post('/api/books/', (req, res) => {
+	const newBook = req.body
+	
+	if( !isValidBook(newBook) ) {
+		console.log('POST /api/books  Not a valid book')
+		res.sendStatus(400)
+		return
+	}
+	
+	// Kontrollera att id inte redan finns
+	// Möjliga sätt att loopa bookData: for-loop, forEach, while, find
+	let withSameId = bookData.find(book => book.id === newBook.id)
+	if( withSameId !== undefined ) {
+		console.log('POST /api/books  Duplicate id')
+		res.sendStatus(400)
+		return
+	}
+
+	// (Eller låt servern bestämma id)
+	bookData.push(newBook)
+	res.sendStatus(200)
+})
+
+
 /*
 Higher order functions:
 filter - ny lista med alla objekt som matchar ett villkor
