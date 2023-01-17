@@ -1,4 +1,4 @@
-function isValidBook(maybeBook) {
+function isValidBookPart(maybeBook) {
 	// Validering: kontrollera att datan är i rätt format
 	// title måste vara en icke-tom sträng
 	if (!isNonEmptyString(maybeBook.title)) {
@@ -9,6 +9,15 @@ function isValidBook(maybeBook) {
 	// authorName måste vara en sträng med minst ett namn, minst 1 bokstav
 	if (!isNonEmptyString(maybeBook.authorName)) {
 		console.log('isValidBook: felaktigt författarnamn')
+		return false
+	}
+
+	return true
+}
+
+function isValidBook(maybeBook) {
+	const validPart = isValidBookPart(maybeBook)
+	if( !validPart ) {
 		return false
 	}
 
@@ -32,4 +41,4 @@ function isNonEmptyString(x) {
 	return typeof x === 'string' && x.length > 0
 }
 
-export { isValidBook, isPositiveInteger }
+export { isValidBook, isValidBookPart, isPositiveInteger }

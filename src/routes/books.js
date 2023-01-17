@@ -1,5 +1,5 @@
 import express from 'express'
-import { isValidBook, isPositiveInteger } from '../validate.js'
+import { isValidBook, isValidBookPart, isPositiveInteger } from '../validate.js'
 
 
 const router = express.Router()
@@ -76,6 +76,42 @@ router.delete('/:id', (req, res) => {
 	}
 
 	bookData.splice(maybeBookIndex, 1)
+	res.sendStatus(200)
+})
+
+router.put('/', (req, res) => {
+	console.log('PUT /  Bad request, no id')
+	res.sendStatus(400)
+})
+router.put('/:id', (req, res) => {
+	// kontrollera att id är korrekt
+	// finns bok med id?
+	// är req.body korrekt?
+	// uppdatera (byt ut) objekt i "databasen"
+
+	const id = Number(req.params.id)
+	// console.log('PUT /:id', req.params.id, id)
+	if (!isPositiveInteger(id)) {
+		console.log('PUT /:id  Bad request, invalid id')
+		res.sendStatus(400)
+		return
+	}
+
+	const maybeBookIndex = bookData.findIndex(book => book.id === id)
+	if (maybeBookIndex === -1) {
+		res.sendStatus(404)
+		return
+	}
+
+	const changes = req.body
+	if( !isValidBookPart(changes) ) {
+		console.log('PUT /:id  Bad request, invalid body')
+		res.sendStatus(400)
+		return
+	}
+
+	changes.id = id
+	bookData[maybeBookIndex] = changes
 	res.sendStatus(200)
 })
 
