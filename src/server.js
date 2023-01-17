@@ -35,11 +35,11 @@ app.use( express.static(publicPath) )
 app.use( '/api/books', booksRoute )
 
 
-app.get('/', (req, res) => {
-	let path = staticPath + '/index.html'
-	// console.log('GET /  path=', path)
-	res.sendFile(path)
-})
+// app.get('/', (req, res) => {
+// 	let path = staticPath + '/index.html'
+// 	// console.log('GET /  path=', path)
+// 	res.sendFile(path)
+// })
 
 
 /*

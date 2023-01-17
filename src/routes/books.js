@@ -1,5 +1,5 @@
 import express from 'express'
-import { isValidBook } from '../validate.js'
+import { isValidBook, isPositiveInteger } from '../validate.js'
 
 
 const router = express.Router()
@@ -29,6 +29,7 @@ router.get('/:id', (req, res) => {
 
 
 router.post('/', (req, res) => {
+	// req.body är null om vi inte har express.json middleware
 	const newBook = req.body
 
 	if (!isValidBook(newBook)) {
@@ -50,5 +51,33 @@ router.post('/', (req, res) => {
 	bookData.push(newBook)
 	res.sendStatus(200)
 })
+
+router.delete('/', (req, res) => {
+	console.log('DELETE /  Id required')
+	res.sendStatus(400)
+})
+router.delete('/:id', (req, res) => {
+	// är id valid?
+	// finns det det en bok med detta id?
+	// ta bort boken
+
+	// id kommer från webbläsaren - det är en STRING
+	const id = Number(req.params.id)
+	console.log('DELETE /:id', req.params.id, id)
+	if( !isPositiveInteger(id) ) {
+		res.sendStatus(400)
+		return
+	}
+
+	const maybeBookIndex = bookData.findIndex(book => book.id === id)
+	if (maybeBookIndex === -1 ) {
+		res.sendStatus(404)
+		return
+	}
+
+	bookData.splice(maybeBookIndex, 1)
+	res.sendStatus(200)
+})
+
 
 export default router
