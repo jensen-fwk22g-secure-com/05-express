@@ -1,7 +1,9 @@
 const btnGetBooks = document.querySelector('#btnGetBooks')
+const btnPostBook = document.querySelector('#btnPostBook')
 const booksList = document.querySelector('#booksList')
 
-btnGetBooks.addEventListener('click', async () => {
+
+async function getBooks() {
 	// 1. skicka ett request till backend: GET /api/books
 	// 2. backend skickar tillbaka lista med böcker (förhoppningsvis)
 	// 3. spara datan i en variabel
@@ -11,6 +13,8 @@ btnGetBooks.addEventListener('click', async () => {
 	const response = await fetch('/api/books')
 	const bookData = await response.json()
 	console.log('Data from server: ', bookData)
+
+	booksList.innerHTML = ''
 
 	bookData.forEach(book => {
 		// Bok-objekt har egenskaperna: title, authorName, id
@@ -22,4 +26,37 @@ btnGetBooks.addEventListener('click', async () => {
 		li.innerText = `${book.title} by ${book.authorName}.`
 		booksList.appendChild(li)
 	})
+}
+btnGetBooks.addEventListener('click', getBooks)
+
+
+btnPostBook.addEventListener('click', async () => {
+	// 1. skicka ett POST /api/books request med data i request body
+	// 2. Vad skickar servern för svar?
+	// 3. uppdatera gränssnittet
+
+	const newBook = {
+		title: 'Liftarens guide till galaxen',
+		authorName: 'Douglas Adams',
+		id: 42
+	}
+	
+	const options = {
+		method: 'POST',
+		body: JSON.stringify(newBook),
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	}
+	const response = await fetch('/api/books', options)
+
+	if( response.status === 200 ) {
+		// Allt gick bra
+		// Skicka ett nytt GET request och uppdatera gränssnittet
+		getBooks()
+
+	} else {
+		// Något gick fel
+		console.log('Något gick fel vid POST request! status=', response.status)
+	}
 })
