@@ -2,6 +2,8 @@
 import express from 'express'
 import * as url from 'url';
 import booksRoute from './routes/books.js'
+import { authenticateUser, createToken } from './auth.js'
+
 
 // Konfiguration
 const app = express()
@@ -35,11 +37,21 @@ app.use( express.static(publicPath) )
 app.use( '/api/books', booksRoute )
 
 
-// app.get('/', (req, res) => {
-// 	let path = staticPath + '/index.html'
-// 	// console.log('GET /  path=', path)
-// 	res.sendFile(path)
-// })
+app.post('/login', (req, res) => {
+	const { name, password } = req.body
+
+	// Finns användaren i databasen?
+	if (authenticateUser(name, password)) {
+		const userToken = createToken(name)
+		res.status(200).send(userToken)
+
+	} else {
+		res.sendStatus(401)  // Unauthorized
+		return
+	}
+})
+
+
 
 
 /*

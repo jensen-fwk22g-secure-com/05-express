@@ -1,6 +1,56 @@
 const btnGetBooks = document.querySelector('#btnGetBooks')
 const btnPostBook = document.querySelector('#btnPostBook')
 const booksList = document.querySelector('#booksList')
+const inputUsername = document.querySelector('#inputUsername')
+const inputPassword = document.querySelector('#inputPassword')
+const btnLogin = document.querySelector('#btnLogin')
+const btnLogout = document.querySelector('#btnLogout')
+
+
+// Används med localStorage
+const JWT_KEY = 'bookapi-jwt'
+let isLoggedIn = false
+
+function updateLoginStatus() {
+	btnLogin.disabled = isLoggedIn
+	btnLogout.disabled = !isLoggedIn
+}
+
+btnLogin.addEventListener('click', async () => {
+	// hämta username och password
+	// skicka med POST request till servern
+	// när servern svarar:
+	// - updatera gränssnittet
+	// - spara JWT i localStorage
+
+	const user = {
+		name: inputUsername.value,
+		password: inputPassword.value
+	}
+	// "Optimistisk" kod
+	const options = {
+		method: 'POST',
+		body: JSON.stringify(user),
+		headers: {
+			// MIME type: application/json
+			"Content-Type": "application/json"
+		}
+	}
+	const response = await fetch('/login', options)
+	if( response.status === 200 ) {
+		console.log('Login successful')
+		const userToken = await response.json()
+		console.log('User token: ', userToken)
+		// Spara userToken.token
+		localStorage.setItem(JWT_KEY, userToken.token)
+		isLoggedIn = true
+
+	} else {  // status 401 unauthorized
+		console.log('Login failed, status: ' + response.status)
+	}
+	updateLoginStatus()
+})
+
 
 
 async function getBooks() {

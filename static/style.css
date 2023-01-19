@@ -4,3 +4,28 @@ h1 {
 body {
 	background-color: beige;
 }
+
+.login-form {
+	display: flex;
+	flex-direction: column;
+	margin: 1em 0em;
+	border: 1px solid darkgray;
+	border-radius: 0.4em;
+	padding: 1em;
+}
+
+.flex-row {
+	display: flex;
+	flex-direction: row;
+	margin-top: 1em;
+}
+.flex-row > * {
+	flex-grow: 1;
+}
+
+button {
+	padding: 0.5em 1em;
+}
+button:hover {
+	cursor: pointer;
+}
