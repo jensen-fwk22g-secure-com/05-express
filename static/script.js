@@ -10,9 +10,20 @@ async function getBooks() {
 	// 4. rendera DOM-element som visar datan == skapa DOM-element som innehåller titel och författare som text
 
 	// Skicka request med AJAX. Ett enkelt GET-request behöver inga inställningar
-	const response = await fetch('/api/books')
-	const bookData = await response.json()
-	console.log('Data from server: ', bookData)
+	let bookData = null
+	try {
+		const response = await fetch('/api/books')
+		if( response.status !== 200 ) {
+			console.log('Could not contact server. Status: ' + response.status)
+			return
+		}
+		bookData = await response.json()
+		console.log('Data from server: ', bookData)
+
+	} catch(error) {
+		console.log('Something went wrong when fetching data from server. (GET) \n' + error.message)
+		return
+	}
 
 	booksList.innerHTML = ''
 
@@ -48,6 +59,7 @@ btnPostBook.addEventListener('click', async () => {
 			'Content-Type': 'application/json'
 		}
 	}
+	// TODO: lägg till try/catch eftersom fetch är en osäker operation
 	const response = await fetch('/api/books', options)
 
 	if( response.status === 200 ) {
