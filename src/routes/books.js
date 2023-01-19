@@ -1,6 +1,6 @@
 import express from 'express'
 import { isValidBook, isValidBookPart, isPositiveInteger } from '../validate.js'
-
+import jwt from 'jsonwebtoken'
 
 const router = express.Router()
 
@@ -28,7 +28,46 @@ router.get('/:id', (req, res) => {
 
 
 
+function userIsAuthorized(req) {
+	// JWT kan skickas antingen i request body, med querystring, eller i header: Authorization
+	let token = req.body.token || req.query.token
+	if (!token) {
+		let x = req.headers['authorization']
+		if (x === undefined) {
+			// Vi hittade ingen token, authorization fail
+			return false
+		}
+		token = x.substring(7)
+		// Authorization: Bearer JWT......
+		// substring(7) för att hoppa över "Bearer " och plocka ut JWT-strängen
+	}
+
+	console.log('Token: ', token)
+	if (token) {
+		let decoded
+		try {
+			decoded = jwt.verify(token, process.env.SECRET)
+		} catch (error) {
+			console.log('Catch! Felaktig token!!', error.message)
+			return false
+		}
+		console.log('decoded: ', decoded)
+		return true
+
+	} else {
+		console.log('Ingen token')
+		return false
+	}
+}
+
 router.post('/', (req, res) => {
+	// Ta reda på om användaren är inloggad innan man får POSTa
+	if( !userIsAuthorized(req) ) {
+		res.sendStatus(401)
+		return
+	}
+
+
 	// req.body är null om vi inte har express.json middleware
 	const newBook = req.body
 

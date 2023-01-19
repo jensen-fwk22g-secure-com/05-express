@@ -92,6 +92,7 @@ btnGetBooks.addEventListener('click', getBooks)
 
 
 btnPostBook.addEventListener('click', async () => {
+	// 0. skicka med JWT om vi är inloggade
 	// 1. skicka ett POST /api/books request med data i request body
 	// 2. Vad skickar servern för svar?
 	// 3. uppdatera gränssnittet
@@ -102,11 +103,13 @@ btnPostBook.addEventListener('click', async () => {
 		id: 42
 	}
 	
+	const jwt = localStorage.getItem(JWT_KEY)
 	const options = {
 		method: 'POST',
 		body: JSON.stringify(newBook),
 		headers: {
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer ' + jwt
 		}
 	}
 	// TODO: lägg till try/catch eftersom fetch är en osäker operation
